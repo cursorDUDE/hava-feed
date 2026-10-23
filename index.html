@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<title>هوا · Hava</title>
+<meta name="description" content="هوا — برنامهٔ هواشناسی اندروید با چند منبع و تقویم شمسی · Hava — an Android weather app that blends many sources">
+<!--
+  Hava — public page of the "Hava Online" feed.
+  * One file, no external requests (fonts, scripts, analytics): it must open on a restricted / national-network-only connection.
+  * It reads feed.json (same folder) and shows it. It does NOT verify the signature and is not a trust anchor:
+    the app verifies every feed itself with the keys compiled into the APK. Treat this page as a courtesy.
+  * Everything from the feed is inserted with textContent; links are accepted only when they start with https://.
+-->
+<style>
+  :root { --bg:#0e1420; --card:#18202f; --text:#eef2f8; --dim:#aab4c5; --line:#2a3447; --accent:#6fb5ff; --warn:#ffb454; --bad:#ff6b6b; --good:#5fd68a; }
+  @media (prefers-color-scheme: light) { :root { --bg:#eef3fa; --card:#ffffff; --text:#14202f; --dim:#53627a; --line:#d4deec; --accent:#1e6fd9; --warn:#b36b00; --bad:#c62828; --good:#1b7f45; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:16px/1.7 system-ui, -apple-system, "Segoe UI", Tahoma, "Noto Sans Arabic", sans-serif; }
+  main { max-width: 720px; margin: 0 auto; padding: 24px 16px 48px; }
+  header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom: 8px; }
+  h1 { margin:0; font-size: 34px; letter-spacing: .5px; }
+  h2 { font-size: 18px; margin: 28px 0 10px; }
+  p { margin: 6px 0; }
+  a { color: var(--accent); }
+  .facts { display:flex; flex-wrap:wrap; gap:6px 14px; align-items:baseline; margin:0 0 6px; }
+  .facts span { unicode-bidi: isolate; }
+  .facts .name { font-weight: 700; font-size: 17px; }
+  .dim { color: var(--dim); }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:18px; padding:16px 18px; margin: 10px 0; }
+  .msg { border-inline-start: 5px solid var(--accent); }
+  .msg.warning { border-inline-start-color: var(--warn); }
+  .msg.security { border-inline-start-color: var(--bad); }
+  .msg h3 { margin: 0 0 4px; font-size: 16px; }
+  button, a.btn { font: inherit; color: var(--text); background: transparent; border:1px solid var(--line); border-radius: 999px; padding: 6px 16px; cursor:pointer; text-decoration:none; display:inline-block; }
+  a.btn.primary { background: var(--accent); border-color: var(--accent); color:#fff; }
+  .row { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+  code { direction:ltr; unicode-bidi:isolate; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; word-break: break-all; }
+  pre { direction:ltr; text-align:left; background: var(--bg); border:1px solid var(--line); border-radius:12px; padding:10px 12px; overflow:auto; font-size:13px; }
+  .small { font-size: 13px; }
+  footer { margin-top: 36px; font-size: 13px; color: var(--dim); }
+  [hidden] { display:none !important; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>هوا <span class="dim" style="font-weight:400">Hava</span></h1>
+    <button id="lang" type="button" aria-label="Language">English</button>
+  </header>
+  <p class="dim" data-fa="برنامهٔ هواشناسی اندروید؛ چند منبع را ترکیب می‌کند، تقویم شمسی دارد و بدون حساب کاربری کار می‌کند."
+                 data-en="An Android weather app that blends many sources, speaks Persian and English, uses the Jalali calendar and needs no account."></p>
+
+  <h2 data-fa="آخرین نسخه" data-en="Latest version"></h2>
+  <div id="latest" class="card">
+    <p id="latestLine" class="dim" data-fa="در حال خواندن…" data-en="Loading…"></p>
+    <div id="latestFacts" class="facts" hidden></div>
+    <div id="latestBox" hidden>
+      <p id="latestNotes"></p>
+      <p class="small dim"><span data-fa="اثر انگشت SHA-256:" data-en="SHA-256:"></span> <code id="latestSha"></code></p>
+      <div class="row" id="latestLinks"></div>
+    </div>
+  </div>
+
+  <h2 data-fa="اطلاعیه‌ها" data-en="Announcements"></h2>
+  <div id="news"></div>
+
+  <h2 data-fa="فایل دانلودشده را بررسی کنید" data-en="Check the file you downloaded"></h2>
+  <div class="card small">
+    <p data-fa="اثر انگشت فایل باید دقیقاً با عدد بالا یکی باشد. در رایانه:" data-en="The file's fingerprint must match the number above exactly. On a computer:"></p>
+    <pre>sha256sum Hava-*.apk</pre>
+    <p class="dim" data-fa="خود برنامه هم پیش از نصب، اثر انگشت و امضای فایل را بررسی می‌کند. این صفحه فقط برای راحتی است و مرجع اعتماد نیست."
+                   data-en="The app also checks the fingerprint and the signature itself before installing. This page is only a courtesy — it is not what you should trust."></p>
+  </div>
+
+  <footer>
+    <p><span data-fa="ساختهٔ پارسا" data-en="Made by Parsa"></span> · <a href="https://t.me/Im_Troller" rel="noopener noreferrer">Telegram @Im_Troller</a></p>
+    <p>All rights reserved © 2026 Parsa</p>
+  </footer>
+</main>
+<script>
+(function () {
+  "use strict";
+  var lang = "fa", feed = null, failed = false;
+  try { var s = localStorage.getItem("hava-lang"); if (s === "fa" || s === "en") lang = s; } catch (e) {}
+
+  function $(id) { return document.getElementById(id); }
+  function pick(t) { t = t || {}; var a = lang === "fa" ? t.fa : t.en, b = lang === "fa" ? t.en : t.fa; return (a && String(a).trim()) || (b && String(b).trim()) || ""; }
+  function https(u) { return typeof u === "string" && /^https:\/\/[^\s]+$/.test(u) && u.length <= 300; }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function digits(s) { return lang === "fa" ? String(s).replace(/[0-9]/g, function (d) { return "۰۱۲۳۴۵۶۷۸۹".charAt(+d); }) : String(s); }
+
+  function b64u(s) {
+    s = String(s).replace(/-/g, "+").replace(/_/g, "/"); while (s.length % 4) s += "=";
+    var bin = atob(s), bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new TextDecoder("utf-8").decode(bytes);
+  }
+  function fmtDay(iso) {   // "2026-10-23" → the reader's calendar; anything unexpected is shown as it is
+    var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso));
+    if (!m) return digits(String(iso).slice(0, 32));
+    try { return new Intl.DateTimeFormat(lang === "fa" ? "fa-IR-u-ca-persian" : "en-GB", { dateStyle: "medium", timeZone: "UTC" }).format(new Date(Date.UTC(+m[1], +m[2] - 1, +m[3]))); } catch (e) { return digits(m[0]); }
+  }
+  function mb(n) { return n > 0 ? digits((n / 1048576).toFixed(1)) + (lang === "fa" ? " مگابایت" : " MB") : ""; }
+
+  function renderStatic() {
+    document.documentElement.lang = lang; document.documentElement.dir = lang === "fa" ? "rtl" : "ltr";
+    $("lang").textContent = lang === "fa" ? "English" : "فارسی";
+    var nodes = document.querySelectorAll("[data-fa]");
+    for (var i = 0; i < nodes.length; i++) nodes[i].textContent = nodes[i].getAttribute("data-" + lang);
+  }
+
+  function renderFeed() {
+    var box = $("latestBox"), line = $("latestLine"), news = $("news");
+    news.textContent = "";
+    if (failed) { line.hidden = false; $("latestFacts").hidden = true; line.textContent = lang === "fa" ? "خواندن اطلاعات ممکن نشد؛ بعداً دوباره امتحان کنید." : "Could not load the information; try again later."; box.hidden = true; return; }
+    if (!feed) return;
+    var l = feed.latest;
+    if (l && l.code > 0) {
+      line.hidden = true;
+      var facts = $("latestFacts"); facts.textContent = ""; facts.hidden = false;
+      facts.appendChild(el("span", "name", (lang === "fa" ? "نسخهٔ " : "Version ") + digits(String(l.name || l.code).slice(0, 32))));
+      if (l.date) facts.appendChild(el("span", "dim", fmtDay(l.date)));
+      if (l.size) facts.appendChild(el("span", "dim", mb(l.size)));
+      $("latestNotes").textContent = pick(l.notes).slice(0, 1200);
+      $("latestSha").textContent = /^[0-9a-f]{64}$/i.test(l.sha256 || "") ? l.sha256 : "—";
+      var links = $("latestLinks"); links.textContent = "";
+      var urls = (l.urls || []).filter(https).slice(0, 6);
+      urls.forEach(function (u, i) { var a = el("a", "btn" + (i === 0 ? " primary" : ""), (lang === "fa" ? "دانلود " : "Download ") + digits(i + 1)); a.href = u; a.rel = "noopener noreferrer"; links.appendChild(a); });
+      if (https(l.page)) { var p = el("a", "btn", lang === "fa" ? "صفحهٔ نسخه" : "Release page"); p.href = l.page; p.rel = "noopener noreferrer"; links.appendChild(p); }
+      box.hidden = false;
+    } else { line.hidden = false; $("latestFacts").hidden = true; line.textContent = lang === "fa" ? "اطلاعاتی دربارهٔ نسخه منتشر نشده." : "No release information published."; box.hidden = true; }
+
+    var now = Math.floor(Date.now() / 1000), shown = 0;
+    var rank = { security: 3, warning: 2, update: 1, info: 0 };
+    (feed.messages || []).filter(function (m) { return m && (!m.from || now >= m.from) && (!m.until || now < m.until); })
+      .sort(function (a, b) { return (rank[b.kind] || 0) - (rank[a.kind] || 0) || (b.from || 0) - (a.from || 0); })
+      .slice(0, 30).forEach(function (m) {
+        var kind = rank.hasOwnProperty(m.kind) ? m.kind : "info";
+        var c = el("div", "card msg " + kind), t = pick(m.title), b = pick(m.body);
+        if (!t && !b) return;
+        if (t) c.appendChild(el("h3", null, t.slice(0, 120)));
+        if (b) c.appendChild(el("p", null, b.slice(0, 1200)));
+        if (https(m.url)) { var a = el("a", null, lang === "fa" ? "بیشتر" : "More"); a.href = m.url; a.rel = "noopener noreferrer"; c.appendChild(a); }
+        news.appendChild(c); shown++;
+      });
+    if (!shown) news.appendChild(el("p", "dim", lang === "fa" ? "اطلاعیه‌ای در کار نیست." : "No announcements right now."));
+  }
+
+  function render() { renderStatic(); renderFeed(); }
+  $("lang").addEventListener("click", function () { lang = lang === "fa" ? "en" : "fa"; try { localStorage.setItem("hava-lang", lang); } catch (e) {} render(); });
+  render();
+
+  fetch("feed.json", { cache: "no-cache" }).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (env) { feed = JSON.parse(b64u(env.payload)); render(); })
+    .catch(function () { failed = true; render(); });
+})();
+</script>
+</body>
+</html>
