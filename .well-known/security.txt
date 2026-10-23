@@ -1,0 +1,7 @@
+# Hava · هوا — security contact (RFC 9116)
+Contact: https://t.me/Im_Troller
+Expires: 2027-09-30T00:00:00.000Z
+Preferred-Languages: fa, en
+Canonical: https://cursordude.github.io/hava-feed/.well-known/security.txt
+Policy: https://github.com/cursorDUDE/hava-feed#readme
+# Please report privately first (Telegram message); do not publish details before a fixed build exists.
