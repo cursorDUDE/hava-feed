@@ -2,6 +2,7 @@
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-0hlnUjDmX906+EhvvBvlAIuprv8GDSn2qBivgeqpq0c='; style-src 'sha256-jSvybvzQ3ObPRIveTPXc9r0mpK/Qb2SU4FDkJXGb1bY='; connect-src 'self'; img-src 'none'; font-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark light">
 <title>هوا · Hava</title>
@@ -28,6 +29,7 @@
   .facts span { unicode-bidi: isolate; }
   .facts .name { font-weight: 700; font-size: 17px; }
   .dim { color: var(--dim); }
+  .lite { font-weight: 400; }
   .card { background:var(--card); border:1px solid var(--line); border-radius:18px; padding:16px 18px; margin: 10px 0; }
   .msg { border-inline-start: 5px solid var(--accent); }
   .msg.warning { border-inline-start-color: var(--warn); }
@@ -46,7 +48,7 @@
 <body>
 <main>
   <header>
-    <h1>هوا <span class="dim" style="font-weight:400">Hava</span></h1>
+    <h1>هوا <span class="dim lite">Hava</span></h1>
     <button id="lang" type="button" aria-label="Language">English</button>
   </header>
   <p class="dim" data-fa="برنامهٔ هواشناسی اندروید؛ چند منبع را ترکیب می‌کند، تقویم شمسی دارد و بدون حساب کاربری کار می‌کند."
