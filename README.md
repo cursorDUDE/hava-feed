@@ -6,7 +6,8 @@ This repository holds the public, **static** files that the Android app **Hava �
 |---|---|
 | `feed.json` | the signed news / "new version" file the app polls (an envelope: `kid`, base64 `payload`, ECDSA `sig`) |
 | `apk/Hava-<version>.apk` | the official release APKs referenced by the signed feed |
-| `index.html` | a small public page that shows `feed.json` (a courtesy — it does **not** verify the signature) |
+| `index.html` | the public landing page of the app (bilingual, light/dark): features, screenshots, download card, verify steps, FAQ. One HTML file with an inline style + script, pinned by a Content-Security-Policy `<meta>`. It reads `feed.json` and shows it (a courtesy — it does **not** verify the signature) |
+| `assets/` | the page's own static files, nothing is loaded from any other site: fonts (`vazirmatn.woff2`, `inter.woff2`, subsets), app screenshots and widget images (`shot-*`, `widget-*`), icons (`ic-*`, Fluent Emoji 3D, MIT), `app-icon.webp`, `favicon.png`, `apple-touch-icon.png`, the share image `og.jpg` (1200×630), and `LICENSES.txt` (third-party notices) |
 | `.well-known/security.txt` | how to report a vulnerability |
 
 ## Nothing here is trusted by the app
@@ -19,7 +20,7 @@ Everything the app accepts from this repository is checked **inside the app** wi
 
 Official signing certificate (SHA-256) of every Hava release:
 `2a:24:2b:ca:87:79:2d:48:cc:eb:1a:d0:0f:50:30:1d:17:e1:aa:16:f9:a5:d4:11:f3:5b:61:5f:d3:62:c6:50`
-Check a downloaded file with `sha256sum Hava-*.apk` (compare with `latest.sha256` shown on the page) and `apksigner verify --print-certs Hava-*.apk`.
+Check a downloaded file with `sha256sum Hava-*.apk` (compare with the SHA-256 shown on the page) and `apksigner verify --print-certs Hava-*.apk`.
 
 ## Addresses
 
