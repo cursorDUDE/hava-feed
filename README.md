@@ -27,7 +27,7 @@ Check a downloaded file with `sha256sum Hava-*.apk` (compare with the SHA-256 sh
 * GitHub Pages: `https://cursordude.github.io/hava-feed/feed.json`
 * jsDelivr (CDN, caches `@main` up to 12 h): `https://cdn.jsdelivr.net/gh/cursorDUDE/hava-feed@main/feed.json`
 * raw: `https://raw.githubusercontent.com/cursorDUDE/hava-feed/main/feed.json`
-
+* https://cursordude.github.io/hava-feed
 ## Credit and contact
 
 Hava is designed and built by **Parsa** — Telegram [@Im_Troller](https://t.me/Im_Troller). All rights reserved © 2026 Parsa.
